@@ -1,6 +1,5 @@
 package com.example.testingA.service;
 
-//import com.example.testingA.service.UserService;
 import com.example.testingA.model.User;
 import com.example.testingA.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,8 +26,7 @@ class UserServiceTest {
     void shouldReturnUserById() {
         User user = new User(1L, "Luke", "luke@test.com");
 
-        when(userRepository.findById(1L))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         User result = userService.getUserById(1L);
 
@@ -39,8 +36,7 @@ class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
-        when(userRepository.findById(1L))
-                .thenReturn(Optional.empty());
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> {
             userService.getUserById(1L);
