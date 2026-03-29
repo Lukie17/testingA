@@ -4,6 +4,7 @@ import com.example.testingA.model.User;
 import com.example.testingA.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,6 +42,19 @@ class UserServiceTest {
         assertThrows(RuntimeException.class, () -> {
             userService.getUserById(1L);
         });
+    }
+    @Test
+    void shouldCaptureSavedUser() {
+        User user = new User(null, "Luke", "luke@test.com");
+
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        userService.createUser(user);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+
+        assertEquals("Luke", captor.getValue().getName());
     }
     @Test
     void shouldCreateUser() {
@@ -97,5 +111,11 @@ class UserServiceTest {
             () -> assertEquals("Luke", result.getName()),
             () -> assertEquals("luke@test.com", result.getEmail())
         );
+    }
+    @Test
+    void shouldThrowExceptionWhenIdIsNull() {
+        assertThrows(RuntimeException.class, () -> {
+            userService.getUserById(null);
+        });
     }
 }
