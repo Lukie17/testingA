@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +33,16 @@ class UserRepositoryTest {
             () -> assertEquals("luke@test.com", savedUser.getEmail()),
             () -> assertNotNull(savedUser.getId())
         );
+    }
+    @Test
+    void shouldFindAllUsers() {
+        userRepository.save(new User(null, "Luke", "luke@test.com"));
+        userRepository.save(new User(null, "John", "john@test.com"));
+        userRepository.save(new User(null, "Niamh", "niamh@yahoo.com"));
+
+        List<User> users = userRepository.findAll();
+
+        assertEquals(3, users.size());
     }
     @Test
     void shouldReturnEmptyWhenUserNotFound() {
