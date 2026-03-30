@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+import com.example.testingA.exception.GlobalExceptionHandler;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
+@Import(GlobalExceptionHandler.class)
 class UserControllerTest {
 
     @Autowired
@@ -49,5 +52,26 @@ class UserControllerTest {
                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Luke"));
+    }
+    @Test
+    void shouldReturnFullUserJson() throws Exception {
+        User user = new User(1L, "Luke", "luke@test.com");
+
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Luke"))
+                .andExpect(jsonPath("$.email").value("luke@test.com"));
+    }
+    @Test
+    void shouldReturn404WhenUserNotFound() throws Exception {
+        when(userService.getUserById(1L))
+                .thenThrow(new RuntimeException("User not found"));
+
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("User not found"));
     }
 }

@@ -23,6 +23,10 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private User createTestUser() {
+        return new User(null, "Luke", "luke@test.com");
+    }
+
     @Test
     void shouldReturnUserById() {
         User user = new User(1L, "Luke", "luke@test.com");
@@ -43,9 +47,10 @@ class UserServiceTest {
             userService.getUserById(1L);
         });
     }
+
     @Test
     void shouldCaptureSavedUser() {
-        User user = new User(null, "Luke", "luke@test.com");
+        User user = createTestUser();
 
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -56,9 +61,10 @@ class UserServiceTest {
 
         assertEquals("Luke", captor.getValue().getName());
     }
+
     @Test
     void shouldCreateUser() {
-        User user = new User(null, "Luke", "luke@test.com");
+        User user = createTestUser();
 
         when(userRepository.save(user)).thenReturn(user);
 
@@ -67,9 +73,10 @@ class UserServiceTest {
         assertEquals("Luke", result.getName());
         verify(userRepository).save(user);
     }
+
     @Test
     void shouldReturnSavedUser() {
-        User user = new User(null, "Luke", "luke@test.com");
+        User user = createTestUser();
 
         when(userRepository.save(user)).thenReturn(user);
 
@@ -78,6 +85,7 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals("luke@test.com", result.getEmail());
     }
+
     @Test
     void shouldCallRepositoryOnceWhenGettingUser() {
         User user = new User(1L, "Luke", "luke@test.com");
@@ -88,6 +96,7 @@ class UserServiceTest {
 
         verify(userRepository, times(1)).findById(1L);
     }
+
     @Test
     void shouldReturnCorrectExceptionMessage() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
@@ -98,6 +107,7 @@ class UserServiceTest {
 
         assertEquals("User not found", exception.getMessage());
     }
+
     @Test
     void shouldReturnCorrectUserObject() {
         User user = new User(1L, "Luke", "luke@test.com");
@@ -112,6 +122,7 @@ class UserServiceTest {
             () -> assertEquals("luke@test.com", result.getEmail())
         );
     }
+
     @Test
     void shouldThrowExceptionWhenIdIsNull() {
         assertThrows(RuntimeException.class, () -> {

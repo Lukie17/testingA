@@ -24,6 +24,19 @@ class UserRepositoryTest {
         Optional<User> result = userRepository.findById(user.getId());
 
         assertTrue(result.isPresent());
-        assertEquals("Luke", result.get().getName());
+
+        User savedUser = result.get();
+
+        assertAll(
+            () -> assertEquals("Luke", savedUser.getName()),
+            () -> assertEquals("luke@test.com", savedUser.getEmail()),
+            () -> assertNotNull(savedUser.getId())
+        );
+    }
+    @Test
+    void shouldReturnEmptyWhenUserNotFound() {
+        Optional<User> result = userRepository.findById(999L);
+
+        assertTrue(result.isEmpty());
     }
 }
